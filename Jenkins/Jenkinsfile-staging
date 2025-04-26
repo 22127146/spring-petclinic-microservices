@@ -5,7 +5,9 @@ pipeline {
             DOCKERHUB_CREDENTIALS_ID = 'Docker_Jenkins_CD'
             DOCKER_REGISTRY        = '22127475'
         }
-        stage('verify tag') {
+        
+    stages {
+stage('verify tag') {
             steps {
                 script {
                     if (!env.GIT_BRANCH.startsWith('refs/tags/')) {
@@ -14,7 +16,6 @@ pipeline {
                 }
             }
         }
-    stages {
         stage('Build and Push Images to Docker Hub') {
             
             steps {

@@ -7,7 +7,7 @@ pipeline {
         IMAGE_NAME = '22127475/spring-petclinic'
         HELM_DIR = 'helm_chart'
         namespace = "dev"
-    
+        DOMAIN = 'dev.com'
     }
 
     stages {

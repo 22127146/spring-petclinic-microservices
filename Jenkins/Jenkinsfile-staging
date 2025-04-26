@@ -17,23 +17,79 @@ pipeline {
                             def output = bat(script: 'git describe --tags', returnStdout: true).trim()
                             def lines = output.readLines()
                             def LATEST_TAG = lines[lines.size() - 1]
+
+services = [
+                        [name: 'config-server', branch: 'main', port: 8888],
+                        [name: 'discovery-server', branch: 'main',  port: 8761 ],
+
+                        [name: 'api-gateway', branch: 'main',  port: 8080],
+                        [name: 'customers-service',  port: 8081],
+                        [name: 'visits-service',   port: 8882], 
+                        [name: 'vets-service',   port: 8883],
+                        [name: 'genai-service', port: 8884],                        
+                        [name: 'admin-server', port: 9090],                         
+                    ]
+
+                            def yamlLines = [
+                                "namespace: ${namespace}",
+
+                                "ingress:",
+                                "  enabled: true",
+                                "  host: ${DOMAIN}",
+                                "services:"
+                            ]
+                            
+                            for (service in services) {
+                                
+                        
+                                
+                                // Add service to YAML lines
+                                yamlLines << "  ${service.name}:"
+                                yamlLines << "    enabled: true"
+                                yamlLines << "    image:"
+                                yamlLines << "      repository: ${IMAGE_NAME}-${service.name}"
+                                yamlLines << "      tag: ${LATEST_TAG}"
+                                yamlLines << "    port: ${service.port}"
+
+                                writeFile file: 'generated-values.yaml', text: yamlLines.join('\n')
+                                
+
+                            }
                             echo "Building Docker image for tag ${LATEST_TAG}"
                             
 
-                            def mvnCommand = "./mvnw.cmd clean install -P buildDocker -DskipTests " +
-                                "-Ddocker.image.prefix=${env.DOCKER_REGISTRY} " +
-                                "-Ddocker.image.tag.commit=${LATEST_TAG} " +
-                                "-Dcontainer.build.extraarg=\"--push\""
+                            // def mvnCommand = "./mvnw.cmd clean install -P buildDocker -DskipTests " +
+                            //     "-Ddocker.image.prefix=${env.DOCKER_REGISTRY} " +
+                            //     "-Ddocker.image.tag.commit=${LATEST_TAG} " +
+                            //     "-Dcontainer.build.extraarg=\"--push\""
 
-                            bat mvnCommand
-                            } catch (e) {
-                                echo "Build failed: ${e.getMessage()}"
-                                error("Docker image build failed")
-                            }
+                            // bat mvnCommand
+                            // } catch (e) {
+                            //     echo "Build failed: ${e.getMessage()}"
+                            //     error("Docker image build failed")
+                            // }
                     }
+                }
+            }
+
+        }
+        
+
+        stage('Deploy with helm') {
+            steps {
+                script {
+
+                    withCredentials([file(credentialsId: 'k8s-secret-file', variable: 'KUBECONFIG')]) {
+                    
+                            bat """
+                                helm upgrade --install petclinic ${HELM_DIR} --namespace staging --create-namespace --values=generated-values.yaml --force
+                            """
+                        
+                    }   
+                
                 }
             }
         }
     }
-        
+    }   
 }

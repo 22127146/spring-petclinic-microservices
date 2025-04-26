@@ -6,7 +6,7 @@ pipeline {
             DOCKER_REGISTRY        = '22127475'
  HELM_DIR = 'helm_chart'
         namespace = "staging"
-        DOMAIN = "dev.com"
+        DOMAIN = "staging.com"
 IMAGE_NAME = '22127475/spring-petclinic'
         }
         
@@ -69,6 +69,7 @@ IMAGE_NAME = '22127475/spring-petclinic'
                                 
 
                             }
+                            bat "type generated-values.yaml"
                             echo "Building Docker image for tag ${LATEST_TAG}"
                             
 
@@ -97,7 +98,7 @@ IMAGE_NAME = '22127475/spring-petclinic'
                     withCredentials([file(credentialsId: 'k8s-secret-file', variable: 'KUBECONFIG')]) {
                     
                             bat """
-                                helm upgrade --install petclinic ${HELM_DIR} --namespace staging --create-namespace --values=generated-values.yaml --force
+                                helm upgrade --install petclinic ${HELM_DIR} --namespace ${namespace} --create-namespace --values=generated-values.yaml --force
                             """
                         
                     }   

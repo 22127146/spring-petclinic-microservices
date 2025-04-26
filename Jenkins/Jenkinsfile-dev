@@ -6,7 +6,8 @@ pipeline {
         DOCKER_REGISTRY        = '22127475'
         IMAGE_NAME = '22127475/spring-petclinic'
         HELM_DIR = 'helm_chart'
-        
+        namespace = "dev-${env.BUILD_ID}"
+    
     }
 
     stages {
@@ -26,35 +27,35 @@ pipeline {
                 }
             }
         }
-        stage('Build and push to docker hub') {
+        // stage('Build and push to docker hub') {
             
-            steps {
-                script{
-                    docker.withRegistry("https://index.docker.io/v1/", env.DOCKERHUB_CREDENTIALS_ID){
-                        try{
+        //     steps {
+        //         script{
+        //             docker.withRegistry("https://index.docker.io/v1/", env.DOCKERHUB_CREDENTIALS_ID){
+        //                 try{
                             
-                            commit_id = 'latest'
+        //                     commit_id = 'latest'
                             
 
-                            def mvnCommand = "./mvnw.cmd clean install -P buildDocker -DskipTests "+
-                                             "-Ddocker.image.prefix=${env.DOCKER_REGISTRY} "+
-                                             "-Ddocker.image.tag.commit=${commit_id} "+
-                                             "-Dcontainer.build.extraarg=\"--push\""
+        //                     def mvnCommand = "./mvnw.cmd clean install -P buildDocker -DskipTests "+
+        //                                      "-Ddocker.image.prefix=${env.DOCKER_REGISTRY} "+
+        //                                      "-Ddocker.image.tag.commit=${commit_id} "+
+        //                                      "-Dcontainer.build.extraarg=\"--push\""
 
-                            echo "Executing Maven command on Windows to build images: ${mvnCommand}"
+        //                     echo "Executing Maven command on Windows to build images: ${mvnCommand}"
                             
-                            bat mvnCommand
+        //                     bat mvnCommand
 
-                            echo "Maven build completed successfully."
-                        }
-                        catch (e) {
-                            echo "Error building images via Maven: ${e.getMessage()}"
-                            error(message: "Failed to build images via Maven")
-                        }
-                    }
-                }
-            }
-        }
+        //                     echo "Maven build completed successfully."
+        //                 }
+        //                 catch (e) {
+        //                     echo "Error building images via Maven: ${e.getMessage()}"
+        //                     error(message: "Failed to build images via Maven")
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
         stage('Deploy using helm') {
             
             steps {

@@ -10,7 +10,7 @@ pipeline {
         stage('verify tag') {
             steps {
                 script {
-                    if (!env.GIT_BRANCH.startsWith('refs/tags/')) {
+                    if (env.GIT_BRANCH && !env.GIT_BRANCH.startsWith('refs/tags/')) {
                         error("This pipeline should only be run for tags, not branches.")
                     }
                 }

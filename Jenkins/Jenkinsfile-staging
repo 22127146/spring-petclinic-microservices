@@ -10,8 +10,9 @@ pipeline {
         stage('verify tag') {
             steps {
                 script {
-                    if (!currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) && (!env.GIT_BRANCH || !env.GIT_BRANCH.startsWith('refs/tags/'))) {
-                        error("This pipeline should only be run for tags, not branches.")
+                    if (env.GIT_BRANCH) {
+                        if (!env.GIT_BRANCH.startsWith('refs/tags/')) {
+                            error("This pipeline should only be run for Git tags.")
                     }
                 }
             }

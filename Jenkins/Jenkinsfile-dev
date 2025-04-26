@@ -6,7 +6,7 @@ pipeline {
         DOCKER_REGISTRY        = '22127475'
         IMAGE_NAME = '22127475/spring-petclinic'
         HELM_DIR = 'helm_chart'
-        namespace = "dev-${env.BUILD_ID}"
+        namespace = "dev"
     
     }
 
@@ -101,10 +101,7 @@ pipeline {
                                 bat """
                                     helm upgrade --install petclinic ${HELM_DIR} --namespace dev --values=dev-values.yaml --force
                                 """
-                            
-                                bat """
-                                    kubectl patch svc api-gateway -n ${namespace} -p "{\\"spec\\": {\\"type\\": \\"NodePort\\"}}"
-                                """
+                        
                     }
                     
                 }

@@ -5,15 +5,22 @@ pipeline {
             DOCKERHUB_CREDENTIALS_ID = 'Docker_Jenkins_CD'
             DOCKER_REGISTRY        = '22127475'
         }
+        stage('verify tag') {
+            steps {
+                script {
+                    if (!env.GIT_BRANCH.startsWith('refs/tags/')) {
+                        error("This pipeline should only be run for tags, not branches.")
+                    }
+                }
+            }
+        }
     stages {
         stage('Build and Push Images to Docker Hub') {
-            when {
-                tag "*"
-            }
+            
             steps {
                 script {
                     docker.withRegistry("https://index.docker.io/v1/", env.DOCKERHUB_CREDENTIALS_ID) { 
-                        try {
+                        
                             def output = bat(script: 'git describe --tags', returnStdout: true).trim()
                             def lines = output.readLines()
                             def LATEST_TAG = lines[lines.size() - 1]
@@ -68,7 +75,7 @@ pipeline {
                             //     echo "Build failed: ${e.getMessage()}"
                             //     error("Docker image build failed")
                             // }
-                    }
+                    
                 }
             }
 

@@ -5,7 +5,7 @@ pipeline {
             DOCKERHUB_CREDENTIALS_ID = 'Docker_Jenkins_CD'
             DOCKER_REGISTRY        = '22127475'
  HELM_DIR = 'helm_chart'
-        namespace = "dev"
+        namespace = "staging"
         DOMAIN = "dev.com"
 IMAGE_NAME = '22127475/spring-petclinic'
         }

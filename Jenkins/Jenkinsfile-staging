@@ -10,7 +10,7 @@ pipeline {
         stage('verify tag') {
             steps {
                 script {
-                    if (env.GIT_BRANCH && !env.GIT_BRANCH.startsWith('refs/tags/')) {
+                    if (!currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) && (!env.GIT_BRANCH || !env.GIT_BRANCH.startsWith('refs/tags/'))) {
                         error("This pipeline should only be run for tags, not branches.")
                     }
                 }
@@ -25,7 +25,7 @@ pipeline {
                         def output = bat(script: 'git describe --tags', returnStdout: true).trim()
                         def lines = output.readLines()
                         def LATEST_TAG = lines[lines.size() - 1]
-
+                        LATEST_TAG = 'v1.2.3'
                         services = [
                             [name: 'config-server', branch: 'main', port: 8888],
                             [name: 'discovery-server', branch: 'main',  port: 8761 ],

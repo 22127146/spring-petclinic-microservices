@@ -18,17 +18,17 @@ pipeline {
                             def lines = output.readLines()
                             def LATEST_TAG = lines[lines.size() - 1]
 
-services = [
-                        [name: 'config-server', branch: 'main', port: 8888],
-                        [name: 'discovery-server', branch: 'main',  port: 8761 ],
-
-                        [name: 'api-gateway', branch: 'main',  port: 8080],
-                        [name: 'customers-service',  port: 8081],
-                        [name: 'visits-service',   port: 8882], 
-                        [name: 'vets-service',   port: 8883],
-                        [name: 'genai-service', port: 8884],                        
-                        [name: 'admin-server', port: 9090],                         
-                    ]
+                        services = [
+                            [name: 'config-server', branch: 'main', port: 8888],
+                            [name: 'discovery-server', branch: 'main',  port: 8761 ],
+    
+                            [name: 'api-gateway', branch: 'main',  port: 8080],
+                            [name: 'customers-service',  port: 8081],
+                            [name: 'visits-service',   port: 8882], 
+                            [name: 'vets-service',   port: 8883],
+                            [name: 'genai-service', port: 8884],                        
+                            [name: 'admin-server', port: 9090],                         
+                        ]
 
                             def yamlLines = [
                                 "namespace: ${namespace}",

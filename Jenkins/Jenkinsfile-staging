@@ -12,7 +12,7 @@ pipeline {
                 script {
                     if (env.GIT_BRANCH) {
                         if (!env.GIT_BRANCH.startsWith('refs/tags/')) {
-                            error("This pipeline should only be run for Git tags.")
+                            //error("This pipeline should only be run for Git tags.")
                         }
                     }
                 }
